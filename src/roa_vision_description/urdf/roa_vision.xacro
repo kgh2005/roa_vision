@@ -1,0 +1,172 @@
+<?xml version="1.0" ?>
+<robot name="roa_vision" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find roa_vision_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find roa_vision_description)/urdf/roa_vision.trans" />
+<xacro:include filename="$(find roa_vision_description)/urdf/roa_vision.gazebo" />
+
+<link name="base_link">
+  <inertial>
+    <origin xyz="-7.1634030964510706e-06 2.8098988316454955e-06 -0.0030296781303112293" rpy="0 0 0"/>
+    <mass value="4.221"/>
+    <inertia ixx="0.011475" iyy="0.00674" izz="0.011258" ixy="0.0" iyz="-1e-06" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="waist_link">
+  <inertial>
+    <origin xyz="2.0825467825424937e-06 -2.246282870501659e-06 0.17882815730762636" rpy="0 0 0"/>
+    <mass value="9.871"/>
+    <inertia ixx="0.837981" iyy="0.442034" izz="0.561737" ixy="2.2e-05" iyz="-1.5e-05" ixz="1.5e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.0 0.0 -0.075212" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/torso_dummy_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.0 0.0 -0.075212" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/torso_dummy_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="neck_pan_link">
+  <inertial>
+    <origin xyz="4.126380239712901e-06 -0.0006385642721635331 0.040337615548342254" rpy="0 0 0"/>
+    <mass value="0.1"/>
+    <inertia ixx="0.000347" iyy="0.000259" izz="0.000254" ixy="-0.0" iyz="3e-06" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.0 0.0 -0.411608" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/camera_link_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.0 0.0 -0.411608" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/camera_link_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="neck_tilt_link">
+  <inertial>
+    <origin xyz="0.015669466418817394 -0.026742365972200175 0.09357175592437522" rpy="0 0 0"/>
+    <mass value="0.8"/>
+    <inertia ixx="0.013728" iyy="0.003772" izz="0.013079" ixy="1.2e-05" iyz="6e-05" ixz="-7e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.0 -0.0265 -0.467108" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/camera_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.0 -0.0265 -0.467108" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/camera_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="zedm_center_camera">
+  <visual>
+    <origin xyz="-0.031742 0.00925 -0.562595" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/ring_center_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+</link>
+
+<link name="zedm_right_camera">
+  <visual>
+    <origin xyz="-0.031742 0.04075 -0.562595" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/ring_right_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+</link>
+
+<link name="zedm_left_camera">
+  <visual>
+    <origin xyz="-0.031742 -0.02225 -0.562595" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="file://$(find roa_vision_description)/meshes/ring_left_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+</link>
+
+<link name="zedm_left_camera_optical_frame"/>
+
+<joint name="zedm_left_camera_optical_joint" type="fixed">
+  <parent link="zedm_left_camera"/>
+  <child link="zedm_left_camera_optical_frame"/>
+  <origin xyz="0 0 0" rpy="-1.57079632679 0 -1.57079632679"/>
+</joint>
+
+<joint name="torso_yaw" type="revolute">
+  <origin xyz="0.0 0.0 0.075212" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="waist_link"/>
+  <axis xyz="-0.0 0.0 -1.0"/>
+  <limit lower="-3.142" upper="3.142" effort="36" velocity="50.3"/>
+</joint>
+
+<joint name="pan" type="revolute">
+  <origin xyz="0.0 0.0 0.336396" rpy="0 0 0"/>
+  <parent link="waist_link"/>
+  <child link="neck_pan_link"/>
+  <axis xyz="-0.0 -0.0 -1.0"/>
+  <limit lower="-3.142" upper="3.142" effort="14" velocity="315"/>
+</joint>
+
+<joint name="tilt" type="revolute">
+  <origin xyz="0.0 0.0265 0.0555" rpy="0 0 0"/>
+  <parent link="neck_pan_link"/>
+  <child link="neck_tilt_link"/>
+  <axis xyz="0.0 1.0 0.0"/>
+  <limit lower="-1.647" upper="1.647" effort="14" velocity="315"/>
+</joint>
+
+<joint name="zedm_center_camera_joint" type="fixed">
+  <origin xyz="0.031742 -0.03575 0.095487" rpy="0 0 0"/>
+  <parent link="neck_tilt_link"/>
+  <child link="zedm_center_camera"/>
+</joint>
+
+<joint name="zedm_right_camera_joint" type="fixed">
+  <origin xyz="0 -0.0315 0" rpy="0 0 0"/>
+  <parent link="zedm_center_camera"/>
+  <child link="zedm_right_camera"/>
+</joint>
+
+<joint name="zedm_left_camera_joint" type="fixed">
+  <origin xyz="0 0.0315 0" rpy="0 0 0"/>
+  <parent link="zedm_center_camera"/>
+  <child link="zedm_left_camera"/>
+</joint>
+
+</robot>

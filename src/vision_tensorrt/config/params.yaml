@@ -1,0 +1,26 @@
+vision_tensorrt_node:
+  ros__parameters:
+    hz: 15.0
+    model_path: ""
+
+    topic:
+      rgb_topic: "/zedm/zed_node/rgb/color/rect/image"
+      bbox_topic: "/Bounding_box"
+    
+    class_names:
+      - "ball"
+      - "robot"
+      - "L"
+      - "T"
+      - "X"
+      - "goal"
+
+    confidence_thresholds:
+      - 0.60  # class_id 0
+      - 0.50  # class_id 1
+      - 0.55  # class_id 2
+      - 0.40  # class_id 3
+      - 0.45  # class_id 4
+      - 0.55  # class_id 5
+
+    nms_threshold: 0.4
