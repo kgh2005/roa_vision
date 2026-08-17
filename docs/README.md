@@ -4,8 +4,8 @@ ROS 2 packages for the ROA robot vision system.
 
 ## Requirements
 
-- Ubuntu 22.04
-- ROS 2 Humble
+- Ubuntu 24.04
+- ROS 2 Jazzy
 - CUDA and TensorRT
 
 ## Packages
