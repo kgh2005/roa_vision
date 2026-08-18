@@ -107,16 +107,10 @@ bool Detector::load_engine()
     engine_blob[metadata_length_size] == '{')
   {
     std::uint32_t metadata_size = 0;
-    std::memcpy(
-      &metadata_size,
-      engine_blob.data(),
-      metadata_length_size);
+    std::memcpy(&metadata_size, engine_blob.data(), metadata_length_size);
 
     if (metadata_size > engine_blob.size() - metadata_length_size) {
-      RCLCPP_FATAL(
-        ros_logger_,
-        "Ultralytics 엔진 메타데이터 헤더가 올바르지 않습니다: %s",
-        engine_path_.c_str());
+      RCLCPP_FATAL(ros_logger_, "Ultralytics 엔진 메타데이터 헤더가 올바르지 않습니다: %s", engine_path_.c_str());
       return false;
     }
 
@@ -126,41 +120,31 @@ bool Detector::load_engine()
     constexpr char tensor_rt_magic[] = {'f', 't', 'r', 't'};
 
     if (engine_blob.size() - engine_offset < sizeof(tensor_rt_magic) ||
-      std::memcmp(
-        engine_blob.data() + engine_offset,
-        tensor_rt_magic,
-        sizeof(tensor_rt_magic)) != 0)
+      std::memcmp(engine_blob.data() + engine_offset, tensor_rt_magic, sizeof(tensor_rt_magic)) != 0)
     {
-      RCLCPP_FATAL(
-        ros_logger_,
-        "Ultralytics 메타데이터 뒤에 TensorRT plan이 없습니다: %s",
-        engine_path_.c_str());
+      RCLCPP_FATAL(ros_logger_, "Ultralytics 메타데이터 뒤에 TensorRT plan이 없습니다: %s", engine_path_.c_str()); 
       return false;
     }
 
     serialized_engine = engine_blob.data() + engine_offset;
     serialized_engine_size = engine_blob.size() - engine_offset;
 
-    RCLCPP_INFO(
-      ros_logger_,
-      "Ultralytics 엔진 메타데이터 %u바이트를 건너뜁니다.",
-      metadata_size);
+    RCLCPP_INFO(ros_logger_, "Ultralytics 엔진 메타데이터 %u바이트를 건너뜁니다.", metadata_size);
   }
 
-  runtime_.reset(
-    nvinfer1::createInferRuntime(trt_logger_));
+  runtime_.reset(nvinfer1::createInferRuntime(trt_logger_));
 
-  if (!runtime_) {
+  if (!runtime_) 
+  {
     RCLCPP_FATAL(ros_logger_, "TensorRT 런타임 생성 실패");
     return false;
   }
 
   engine_.reset(
-    runtime_->deserializeCudaEngine(
-      serialized_engine,
-      serialized_engine_size));
+    runtime_->deserializeCudaEngine(serialized_engine, serialized_engine_size));
 
-  if (!engine_) {
+  if (!engine_) 
+  {
     RCLCPP_FATAL(ros_logger_, "엔진 역직렬화 실패: %s", engine_path_.c_str());
     return false;
   }
@@ -168,48 +152,44 @@ bool Detector::load_engine()
   context_.reset(
     engine_->createExecutionContext());
 
-  if (!context_) {
+  if (!context_) 
+  {
     RCLCPP_FATAL(ros_logger_, "실행 컨텍스트 생성 실패");
     return false;
   }
 
-  for (int index = 0;
-    index < engine_->getNbIOTensors();
-    ++index)
+  for (int index = 0; index < engine_->getNbIOTensors(); index++)
   {
-    const char * tensor_name =
-      engine_->getIOTensorName(index);
+    const char * tensor_name = engine_->getIOTensorName(index);
 
-    if (
-      engine_->getTensorIOMode(tensor_name) ==
-      nvinfer1::TensorIOMode::kINPUT)
+    if (engine_->getTensorIOMode(tensor_name) == nvinfer1::TensorIOMode::kINPUT) 
     {
       input_name_ = tensor_name;
-    } else {
+    } 
+    else 
+    {
       output_name_ = tensor_name;
     }
   }
 
-  if (input_name_.empty() || output_name_.empty()) {
+  if (input_name_.empty() || output_name_.empty()) 
+  {
     RCLCPP_FATAL(ros_logger_, "입력 또는 출력 텐서를 찾지 못했습니다.");
     return false;
   }
 
-  const nvinfer1::Dims input_dims =
-    engine_->getTensorShape(input_name_.c_str());
+  const nvinfer1::Dims input_dims = engine_->getTensorShape(input_name_.c_str());
+  const nvinfer1::Dims output_dims = engine_->getTensorShape(output_name_.c_str());
 
-  const nvinfer1::Dims output_dims =
-    engine_->getTensorShape(output_name_.c_str());
-
-  if (input_dims.nbDims != 4) {
+  if (input_dims.nbDims != 4) 
+  {
     RCLCPP_FATAL(ros_logger_, "입력 텐서가 NCHW 형식이 아닙니다.");
     return false;
   }
 
-  const int class_count =
-    static_cast<int>(confidence_thresholds_.size());
+  const int class_count = static_cast<int>(confidence_thresholds_.size());
 
-  const bool end_to_end_output =
+  const bool end_to_end_output = 
     output_dims.nbDims == 3 &&
     output_dims.d[0] == 1 &&
     output_dims.d[2] == 6;
@@ -219,11 +199,9 @@ bool Detector::load_engine()
     output_dims.d[0] == 1 &&
     output_dims.d[1] == 4 + class_count;
 
-  if (!end_to_end_output && !raw_yolo_output) {
-    RCLCPP_FATAL(
-      ros_logger_,
-      "지원하지 않는 출력 텐서 형식입니다: nbDims=%d",
-      output_dims.nbDims);
+  if (!end_to_end_output && !raw_yolo_output) 
+  {
+    RCLCPP_FATAL(ros_logger_, "지원하지 않는 출력 텐서 형식입니다: nbDims=%d", output_dims.nbDims);
     return false;
   }
 
@@ -234,9 +212,7 @@ bool Detector::load_engine()
 
   input_elements_ = 1;
 
-  for (int index = 0;
-    index < input_dims.nbDims;
-    ++index)
+  for (int index = 0; index < input_dims.nbDims; index++)
   {
     if (input_dims.d[index] <= 0) {
       RCLCPP_FATAL(ros_logger_, "동적 입력 shape은 지원하지 않습니다.");
@@ -248,9 +224,7 @@ bool Detector::load_engine()
 
   output_elements_ = 1;
 
-  for (int index = 0;
-    index < output_dims.nbDims;
-    ++index)
+  for (int index = 0; index < output_dims.nbDims; index++)
   {
     if (output_dims.d[index] <= 0) {
       RCLCPP_FATAL(ros_logger_, "동적 출력 shape은 지원하지 않습니다.");
@@ -408,7 +382,7 @@ bool Detector::preprocess(
       normalized_image.ptr<float>(),
       pixel_count * sizeof(float));
   } else {
-    for (int row = 0; row < input_height_; ++row) {
+    for (int row = 0; row < input_height_; row++) {
       std::memcpy(
         host_input_.data() +
         static_cast<std::size_t>(row) * input_width_,
@@ -477,7 +451,7 @@ std::vector<Detection> Detector::postprocess(
   if (raw_yolo_output_) {
     const std::size_t candidate_count = max_detections_;
 
-    for (std::size_t index = 0; index < candidate_count; ++index) {
+    for (std::size_t index = 0; index < candidate_count; index++) {
       const float center_x = host_output_[index];
       const float center_y = host_output_[candidate_count + index];
       const float width = host_output_[2 * candidate_count + index];
@@ -486,9 +460,7 @@ std::vector<Detection> Detector::postprocess(
       int class_id = -1;
       float confidence = 0.0F;
 
-      for (std::size_t class_index = 0;
-        class_index < confidence_thresholds_.size();
-        ++class_index)
+      for (std::size_t class_index = 0; class_index < confidence_thresholds_.size(); class_index++)
       {
         const float class_confidence =
           host_output_[(4 + class_index) * candidate_count + index];
@@ -531,9 +503,7 @@ std::vector<Detection> Detector::postprocess(
   }
 
 
-  for (std::size_t index = 0;
-    index < max_detections_;
-    ++index)
+  for (std::size_t index = 0; index < max_detections_; index++)
   {
     const float * output =
       host_output_.data() + index * 6;
@@ -585,7 +555,7 @@ std::vector<Detection> Detector::postprocess(
       });
   }
 
-  return apply_classwise_nms(std::move(detections));
+  return detections;
 }
 
 std::vector<Detection> Detector::apply_classwise_nms(
@@ -598,17 +568,13 @@ std::vector<Detection> Detector::apply_classwise_nms(
   std::vector<Detection> kept_detections;
   kept_detections.reserve(detections.size());
 
-  for (std::size_t class_index = 0;
-    class_index < confidence_thresholds_.size();
-    ++class_index)
+  for (std::size_t class_index = 0; class_index < confidence_thresholds_.size(); class_index++)
   {
     std::vector<cv::Rect> boxes;
     std::vector<float> confidences;
     std::vector<std::size_t> detection_indices;
 
-    for (std::size_t detection_index = 0;
-      detection_index < detections.size();
-      ++detection_index)
+    for (std::size_t detection_index = 0; detection_index < detections.size(); detection_index++)
     {
       const auto & detection = detections[detection_index];
 
@@ -633,9 +599,9 @@ std::vector<Detection> Detector::apply_classwise_nms(
       nms_threshold_,
       kept_indices);
 
-    for (const int kept_index : kept_indices) {
-      kept_detections.push_back(
-        detections[detection_indices[static_cast<std::size_t>(kept_index)]]);
+    for (const int kept_index : kept_indices) 
+    {
+      kept_detections.push_back(detections[detection_indices[static_cast<std::size_t>(kept_index)]]);
     }
   }
 

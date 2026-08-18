@@ -21,5 +21,7 @@ public:
   std::vector<std::string> class_names;
   std::vector<double> confidence_thresholds;
   double nms_threshold;
+
+  std::vector<int64_t> single_detection_class_ids;
 };
 } // namespace vision_tensorrt

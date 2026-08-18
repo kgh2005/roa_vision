@@ -5,14 +5,13 @@
 #include <sensor_msgs/msg/image.hpp>
 
 #include <cv_bridge/cv_bridge.hpp>
-#include <opencv2/opencv.hpp>
 #include <opencv2/core/mat.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
 
 #include "vision_tensorrt/detector.hpp"
 #include "vision_tensorrt/parameters.hpp"
 #include "vision_tensorrt/type.hpp"
+#include "vision_tensorrt/visualizer.hpp"
+#include "vision_tensorrt/detection_filter.hpp"
 
 #include <map>
 #include <memory>
@@ -39,6 +38,8 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
 
   std::unique_ptr<Detector> detector_;
+  DetectionFilter detection_filter_;
+  Visualizer visualizer_;
 
   // ===== ROS 통신 =====
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;

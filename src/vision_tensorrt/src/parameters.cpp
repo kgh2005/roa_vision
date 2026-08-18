@@ -28,6 +28,10 @@ Parameters::Parameters(rclcpp::Node & node)
 
   nms_threshold = node.declare_parameter<double>("nms_threshold", 0.4);
 
+  single_detection_class_ids = node.declare_parameter<std::vector<int64_t>>(
+    "single_detection_class_ids",
+    std::vector<int64_t>{});
+
   if (hz <= 0.0) {
     throw std::invalid_argument("hz must be greater than 0");
   }
@@ -46,6 +50,15 @@ Parameters::Parameters(rclcpp::Node & node)
 
   if (nms_threshold < 0.0 || nms_threshold > 1.0) {
     throw std::invalid_argument("nms_threshold must be between 0 and 1");
+  }
+
+  for (const auto class_id : single_detection_class_ids) {
+    if (class_id < 0 ||
+      static_cast<std::size_t>(class_id) >= class_names.size())
+    {
+      throw std::invalid_argument(
+        "single_detection_class_ids contains an invalid class ID");
+    }
   }
 }
 

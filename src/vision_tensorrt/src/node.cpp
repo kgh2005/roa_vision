@@ -7,7 +7,11 @@
 namespace vision_tensorrt
 {
 
-TensoRTNode::TensoRTNode(const rclcpp::NodeOptions & options) : Node("vision_tensorrt_node", options), params_(*this)
+TensoRTNode::TensoRTNode(const rclcpp::NodeOptions & options)
+: Node("vision_tensorrt_node", options),
+  params_(*this),
+  detection_filter_(params_.single_detection_class_ids),
+  visualizer_(get_logger(), params_.class_names)
 {
   detector_ = std::make_unique<Detector>(
     params_.engine_path,
@@ -20,10 +24,17 @@ TensoRTNode::TensoRTNode(const rclcpp::NodeOptions & options) : Node("vision_ten
     return;
   }
 
-  image_sub_ = create_subscription<sensor_msgs::msg::Image>(params_.rgb_input_topic, rclcpp::SensorDataQoS(), std::bind(&TensoRTNode::image_callback, this, std::placeholders::_1));
+  image_sub_ = create_subscription<sensor_msgs::msg::Image>(
+    params_.rgb_input_topic,
+    rclcpp::SensorDataQoS().keep_last(1),
+    std::bind(
+      &TensoRTNode::image_callback,
+      this,
+      std::placeholders::_1));
 
   timer_ = create_wall_timer(
-  std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(1.0 / params_.hz)), std::bind(&TensoRTNode::timer_callback, this));
+    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(1.0 / params_.hz)),
+    std::bind(&TensoRTNode::timer_callback, this));
 
   RCLCPP_INFO(get_logger(), "Vision TensorRT node started");
 }
@@ -32,6 +43,10 @@ TensoRTNode::~TensoRTNode() = default;
 
 void TensoRTNode::timer_callback()
 {
+  using Clock = std::chrono::steady_clock;
+
+  const auto total_start = Clock::now();
+
   cv::Mat image;
 
   {
@@ -44,47 +59,35 @@ void TensoRTNode::timer_callback()
     image = bgr_image_.clone();
   }
 
-  const auto detections = detector_->infer(image);
+  const auto inference_start = Clock::now();
 
-  // 검출 결과 표시
-  for (const auto & detection : detections) {
-    cv::rectangle(
-      image,
-      cv::Point(detection.x1, detection.y1),
-      cv::Point(detection.x2, detection.y2),
-      cv::Scalar(0, 255, 0),
-      2);
+  auto detections = detector_->infer(image);
 
-    const std::string label =
-      "class: " + std::to_string(detection.class_id) +
-      " conf: " +
-      cv::format("%.2f", detection.confidence);
+  const auto inference_end = Clock::now();
 
-    cv::putText(
-      image,
-      label,
-      cv::Point(
-        detection.x1,
-        std::max(detection.y1 - 5, 15)),
-      cv::FONT_HERSHEY_SIMPLEX,
-      0.5,
-      cv::Scalar(0, 255, 0),
-      1,
-      cv::LINE_AA);
-  }
+  detections =
+    detection_filter_.apply(std::move(detections));
 
-  cv::imshow("TensorRT Detection", image);
+  visualizer_.show(image, detections);
 
-  // imshow 창의 이벤트를 처리하려면 반드시 필요
-  const int key = cv::waitKey(1);
+  const auto total_end = Clock::now();
 
-  if (key == 27) {  // ESC
-    RCLCPP_INFO(
-      get_logger(),
-      "ESC pressed, closing display window");
+  const double inference_ms =
+    std::chrono::duration<double, std::milli>(
+    inference_end - inference_start).count();
 
-    cv::destroyWindow("TensorRT Detection");
-  }
+  const double total_ms =
+    std::chrono::duration<double, std::milli>(
+    total_end - total_start).count();
+
+  RCLCPP_INFO_THROTTLE(
+    get_logger(),
+    *get_clock(),
+    1000,
+    "[PERF] inference=%.2f ms | total=%.2f ms | detections=%zu",
+    inference_ms,
+    total_ms,
+    detections.size());
 }
 
 void TensoRTNode::image_callback(const sensor_msgs::msg::Image::ConstSharedPtr msg)

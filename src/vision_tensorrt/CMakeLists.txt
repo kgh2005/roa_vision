@@ -74,6 +74,8 @@ add_executable(vision_tensorrt_node
   src/node.cpp
   src/detector.cpp
   src/parameters.cpp
+  src/detection_filter.cpp
+  src/visualizer.cpp
 )
 
 target_compile_features(

@@ -1,6 +1,6 @@
 vision_tensorrt_node:
   ros__parameters:
-    hz: 15.0
+    hz: 30.0
     model_path: ""
 
     topic:
@@ -24,3 +24,7 @@ vision_tensorrt_node:
       - 0.55  # class_id 5
 
     nms_threshold: 0.4
+
+    single_detection_class_ids:
+      - 0
+      - 5
