@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class RefinerParams:
+class DetectionRefinerParams:
     hz: float
     half_win: int
     remove_space_dis: int
@@ -20,7 +20,7 @@ class RefinerParams:
     camera_frame: str
 
 
-def declare_refiner_params(node):
+def declare_detection_refiner_params(node):
     node.declare_parameter("hz", 15.0)
     node.declare_parameter("half_win", 1)
     node.declare_parameter("remove_space_dis", 3000)
@@ -39,11 +39,11 @@ def declare_refiner_params(node):
     node.declare_parameter("tf_joint.camera_frame", "zedm_left_camera_frame")
 
 
-def load_refiner_params(node) -> RefinerParams:
+def load_detection_refiner_params(node) -> DetectionRefinerParams:
     half_win = int(node.get_parameter("half_win").value)
     half_win = max(0, min(6, half_win))
 
-    params = RefinerParams(
+    params = DetectionRefinerParams(
         hz=float(node.get_parameter("hz").value),
         half_win=half_win,
         remove_space_dis=int(node.get_parameter("remove_space_dis").value),

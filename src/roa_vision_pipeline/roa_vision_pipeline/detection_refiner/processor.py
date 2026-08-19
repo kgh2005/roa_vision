@@ -3,10 +3,10 @@ import math
 
 from vision_interfaces.msg import Robocupvision, Robocupvisionfeature
 
-from robocup_zedm.refiner.utils import pixel_to_cam_coords
+from roa_vision_pipeline.detection_refiner.utils import pixel_to_cam_coords
 
 
-class Refiner:
+class DetectionRefiner:
     def __init__(self, half_win: int, remove_space_dis: int):
         self.half_win = int(half_win)
         self.remove_space_dis = int(remove_space_dis)

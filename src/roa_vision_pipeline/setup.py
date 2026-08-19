@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 from glob import glob
 import os
 
-package_name = 'robocup_zedm'
+package_name = 'roa_vision_pipeline'
 
 setup(
     name=package_name,
@@ -14,10 +14,9 @@ setup(
         # package.xml
         ('share/' + package_name, ['package.xml']),
 
-        # install config/launch/model into share
+        # install config and launch files into share
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml') + glob('config/*.rviz')),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
-        (os.path.join('share', package_name, 'model'), glob('model/*')),
     ],
     install_requires=[
         'setuptools',
@@ -25,16 +24,15 @@ setup(
     zip_safe=True,
     maintainer='robit',
     maintainer_email='leokim0503@kw.ac.kr',
-    description='ZED Mini + YOLO detection/refiner nodes for RoboCup',
+    description='Detection refinement and ball tracking for the RO:BIT vision pipeline',
     license='Apache-2.0',
     extras_require={
         'test': ['pytest'],
     },
     entry_points={
         'console_scripts': [
-            'detection_node = robocup_zedm.detection.node:main',
-            'refiner_node = robocup_zedm.refiner.node:main',
-            'pantilt_node = robocup_zedm.pantilt.node:main',
+            'detection_refiner_node = roa_vision_pipeline.detection_refiner.node:main',
+            'ball_tracker_node = roa_vision_pipeline.ball_tracker.node:main',
         ],
     },
 )

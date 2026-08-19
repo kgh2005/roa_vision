@@ -1,4 +1,4 @@
-refiner_node:
+detection_refiner_node:
   ros__parameters:
     hz: 30.0
     half_win: 1  # 얼마나 주변 depth를 볼 것인가
@@ -18,7 +18,7 @@ refiner_node:
       base_link_frame: "base_link"
       camera_frame: "zedm_left_camera_optical_frame"
 
-pantilt_node:
+ball_tracker_node:
   ros__parameters:
     rate_hz: 50.0
 

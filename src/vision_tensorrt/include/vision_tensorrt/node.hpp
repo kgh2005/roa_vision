@@ -3,8 +3,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <sensor_msgs/msg/image.hpp>
-#include <std_msgs/msg/header.hpp>
-#include <vision_msgs/msg/detection2_d_array.hpp>
+#include <vision_interfaces/msg/BoundingBox.hpp>
 
 #include <cv_bridge/cv_bridge.hpp>
 #include <opencv2/core/mat.hpp>
@@ -34,7 +33,6 @@ public:
 private:
   // ===== 상태 =====
   cv::Mat bgr_image_;
-  std_msgs::msg::Header image_header_;
   std::mutex image_mutex_;
 
   Parameters params_;
@@ -46,7 +44,7 @@ private:
 
   // ===== ROS 통신 =====
   rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_sub_;
-  rclcpp::Publisher<vision_msgs::msg::Detection2DArray>::SharedPtr detection_pub_;
+  rclcpp::Publisher<vision_interfaces::msg::BoundingBox>::SharedPtr detection_pub_;
 
   // ===== Callback =====
   void timer_callback();

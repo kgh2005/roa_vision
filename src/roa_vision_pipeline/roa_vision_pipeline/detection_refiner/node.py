@@ -19,21 +19,21 @@ import tf2_geometry_msgs
 from vision_interfaces.msg import BoundingBox
 from vision_interfaces.msg import Robocupvision, Robocupvisionfeature
 
-from robocup_zedm.refiner.params import (
-    declare_refiner_params,
-    load_refiner_params,
+from roa_vision_pipeline.detection_refiner.params import (
+    declare_detection_refiner_params,
+    load_detection_refiner_params,
 )
-from robocup_zedm.refiner.refiner import Refiner
+from roa_vision_pipeline.detection_refiner.processor import DetectionRefiner
 
 
-class RefinerNode(Node):
+class DetectionRefinerNode(Node):
     def __init__(self):
-        super().__init__("refiner_node")
+        super().__init__("detection_refiner_node")
 
-        declare_refiner_params(self)
-        self.params = load_refiner_params(self)
+        declare_detection_refiner_params(self)
+        self.params = load_detection_refiner_params(self)
 
-        self.refiner = Refiner(
+        self.processor = DetectionRefiner(
             half_win=self.params.half_win,
             remove_space_dis=self.params.remove_space_dis,
         )
@@ -105,7 +105,7 @@ class RefinerNode(Node):
         period = 1.0 / max(self.params.hz, 1e-6)
         self.timer = self.create_timer(period, self.bbox_processing)
 
-        self.get_logger().info("RefinerNode initialized.")
+        self.get_logger().info("DetectionRefinerNode initialized.")
 
     # ---------------- TF ----------------
     def transform_point_to_base(
@@ -338,7 +338,7 @@ class RefinerNode(Node):
 
             depth_copy = self.latest_depth_m.copy()
 
-        vision_msg, vision_feature_msg = self.refiner.refine(
+        vision_msg, vision_feature_msg = self.processor.refine(
             depth_m=depth_copy,
             fx=fx,
             fy=fy,
@@ -355,7 +355,7 @@ class RefinerNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = RefinerNode()
+    node = DetectionRefinerNode()
 
     try:
         rclpy.spin(node)

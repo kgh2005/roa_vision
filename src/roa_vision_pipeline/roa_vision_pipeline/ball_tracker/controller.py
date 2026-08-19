@@ -2,7 +2,7 @@ import math
 
 from transitions import Machine
 
-class PanTiltController:
+class BallTrackerController:
     states = ["lost", "found"]
 
     def __init__(self, params):
@@ -63,7 +63,7 @@ class PanTiltController:
 
         self.machine = Machine(
             model=self,
-            states=PanTiltController.states,
+            states=BallTrackerController.states,
             initial="lost",
         )
 

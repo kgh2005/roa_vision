@@ -12,4 +12,5 @@ ROS 2 packages for the ROA robot vision system.
 
 - `vision_interfaces`: Custom messages for the vision system
 - `vision_tensorrt`: TensorRT-accelerated YOLO object detection
+- `roa_vision_pipeline`: Detection refinement and ball tracking
 - `roa_vision_description`: Camera URDF, TF, and RViz configuration

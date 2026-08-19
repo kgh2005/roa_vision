@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class PanTiltParams:
+class BallTrackerParams:
     rate_hz: float
 
     vision_topic: str
@@ -38,7 +38,7 @@ class PanTiltParams:
 
 
 
-def declare_pantilt_params(node):
+def declare_ball_tracker_params(node):
     node.declare_parameter("rate_hz", 50.0)
 
     node.declare_parameter("topic.vision_topic", "vision")
@@ -73,8 +73,8 @@ def declare_pantilt_params(node):
     node.declare_parameter("tf_joint.tilt_joint_name", "tilt")
 
 
-def load_pantilt_params(node) -> PanTiltParams:
-    return PanTiltParams(
+def load_ball_tracker_params(node) -> BallTrackerParams:
+    return BallTrackerParams(
         rate_hz=float(node.get_parameter("rate_hz").value),
 
         vision_topic=str(node.get_parameter("topic.vision_topic").value),

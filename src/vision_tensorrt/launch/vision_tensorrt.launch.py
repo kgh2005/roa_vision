@@ -24,7 +24,7 @@ def generate_launch_description():
         launch_arguments={
             "camera_model": "zedm",
             "camera_name": "zedm",
-            "publish_tf": "true",
+            "publish_tf": "false",
             "publish_map_tf": "false",
             "publish_imu_tf": "false",
             "use_sim_time": "false",
@@ -40,13 +40,11 @@ def generate_launch_description():
             parameter_path,
             {
                 "model_path": model_path,
-            }
+            },
         ],
     )
 
-    return LaunchDescription(
-        [
-            zed_launch, 
-            detection_node
-        ]
-    )
+    return LaunchDescription([
+        zed_launch,
+        detection_node,
+    ])

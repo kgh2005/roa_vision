@@ -33,7 +33,7 @@ TensoRTNode::TensoRTNode(const rclcpp::NodeOptions & options)
       this,
       std::placeholders::_1));
 
-  detection_pub_ = create_publisher<vision_msgs::msg::Detection2DArray>(
+  detection_pub_ = create_publisher<vision_interfaces::msg::BoundingBox>(
     params_.detection_output_topic,
     rclcpp::QoS(1));
 
@@ -53,7 +53,6 @@ void TensoRTNode::timer_callback()
   const auto total_start = Clock::now();
 
   cv::Mat image;
-  std_msgs::msg::Header image_header;
 
   {
     std::lock_guard<std::mutex> lock(image_mutex_);
@@ -63,7 +62,6 @@ void TensoRTNode::timer_callback()
     }
 
     image = bgr_image_.clone();
-    image_header = image_header_;
   }
 
   const auto inference_start = Clock::now();
@@ -75,8 +73,15 @@ void TensoRTNode::timer_callback()
   detections =
     detection_filter_.apply(std::move(detections));
 
-  detection_pub_->publish(
-    to_detection2d_array(detections, image_header, params_.class_names));
+  auto bounding_box_message = to_bounding_box(detections);
+  detection_pub_->publish(bounding_box_message);
+
+  bounding_box_message.class_ids.clear();
+  bounding_box_message.score.clear();
+  bounding_box_message.x1.clear();
+  bounding_box_message.y1.clear();
+  bounding_box_message.x2.clear();
+  bounding_box_message.y2.clear();
 
   visualizer_.show(image, detections);
 
@@ -109,7 +114,6 @@ void TensoRTNode::image_callback(const sensor_msgs::msg::Image::ConstSharedPtr m
     {
       std::lock_guard<std::mutex> lock(image_mutex_);
       bgr_image_ = std::move(image);
-      image_header_ = msg->header;
     }
   } catch (const cv_bridge::Exception & e) {
     RCLCPP_ERROR(

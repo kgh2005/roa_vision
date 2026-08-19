@@ -23,7 +23,6 @@
   <!-- ROS dependencies -->
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
-  <depend>std_msgs</depend>
   <depend>cv_bridge</depend>
   <depend>vision_interfaces</depend>
 

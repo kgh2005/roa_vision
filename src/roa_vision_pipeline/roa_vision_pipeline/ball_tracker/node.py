@@ -12,21 +12,21 @@ from vision_interfaces.msg import PanTiltMsgs
 from dynamixel_rdk_msgs.msg import DynamixelPanTiltMsgs
 from std_msgs.msg import Bool
 
-from robocup_zedm.pantilt.params import (
-    declare_pantilt_params,
-    load_pantilt_params,
+from roa_vision_pipeline.ball_tracker.params import (
+    declare_ball_tracker_params,
+    load_ball_tracker_params,
 )
-from robocup_zedm.pantilt.controller import PanTiltController
+from roa_vision_pipeline.ball_tracker.controller import BallTrackerController
 
 
-class PanTiltNode(Node):
+class BallTrackerNode(Node):
     def __init__(self):
-        super().__init__("pantilt_node")
+        super().__init__("ball_tracker_node")
 
-        declare_pantilt_params(self)
-        self.params = load_pantilt_params(self)
+        declare_ball_tracker_params(self)
+        self.params = load_ball_tracker_params(self)
 
-        self.controller = PanTiltController(self.params)
+        self.controller = BallTrackerController(self.params)
 
         self.vision_sub = self.create_subscription(Robocupvision, self.params.vision_topic, self.vision_callback, 1,)
         self.pan_zero_sub = self.create_subscription(Bool, self.params.master2vision_topic, self.pan_zero_callback, 1,)
@@ -39,7 +39,7 @@ class PanTiltNode(Node):
 
         self.pan_zeroed = False
 
-        self.get_logger().info("PanTiltNode initialized.")
+        self.get_logger().info("BallTrackerNode initialized.")
         self.get_logger().info(f"rate_hz: {self.params.rate_hz}")
         self.get_logger().info(
             f"pan_id: {self.params.pan_id}, "
@@ -153,7 +153,7 @@ class PanTiltNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = PanTiltNode()
+    node = BallTrackerNode()
 
     try:
         rclpy.spin(node)
