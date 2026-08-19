@@ -5,7 +5,7 @@ vision_tensorrt_node:
 
     topic:
       rgb_topic: "/zedm/zed_node/rgb/color/rect/image"
-      bbox_topic: "/Bounding_box"
+      detection_topic: "/Bounding_box"
     
     class_names:
       - "ball"

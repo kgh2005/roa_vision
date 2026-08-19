@@ -17,8 +17,9 @@ find_package(ament_cmake REQUIRED)
 
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
-find_package(vision_interfaces REQUIRED)
+find_package(vision_msgs REQUIRED)
 
 find_package(OpenCV REQUIRED COMPONENTS
   core
@@ -75,6 +76,7 @@ add_executable(vision_tensorrt_node
   src/detector.cpp
   src/parameters.cpp
   src/detection_filter.cpp
+  src/detection_message_converter.cpp
   src/visualizer.cpp
 )
 
@@ -97,6 +99,7 @@ ament_target_dependencies(
   vision_tensorrt_node
   rclcpp
   sensor_msgs
+  std_msgs
   cv_bridge
   vision_interfaces
 )

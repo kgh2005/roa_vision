@@ -18,6 +18,10 @@ Parameters::Parameters(rclcpp::Node & node)
     "topic.rgb_topic",
     "/camera/image_raw");
   
+  detection_output_topic = node.declare_parameter<std::string>(
+    "topic.detection_topic",
+    "/vision/detections_2d");
+
   class_names = node.declare_parameter<std::vector<std::string>>(
     "class_names",
     {"ball", "robot", "L", "T", "X", "goal"});
@@ -42,6 +46,10 @@ Parameters::Parameters(rclcpp::Node & node)
 
   if (rgb_input_topic.empty()) {
     throw std::invalid_argument("rgb_input_topic must not be empty");
+  }
+
+  if (detection_output_topic.empty()) {
+    throw std::invalid_argument("detection_output_topic must not be empty");
   }
 
   if (class_names.size() != confidence_thresholds.size()) {

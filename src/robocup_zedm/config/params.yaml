@@ -1,0 +1,57 @@
+refiner_node:
+  ros__parameters:
+    hz: 30.0
+    half_win: 1  # 얼마나 주변 depth를 볼 것인가
+    remove_space_dis: 10000  # mm
+    pan_move_thresh_deg: 0.3
+    use_pan_move_flag: false
+
+    topic:
+      depth_topic: "/zedm/zed_node/depth/depth_registered"
+      camera_info_topic: "/zedm/zed_node/rgb/color/rect/image/camera_info"
+      bbox_topic: "/Bounding_box"
+
+      vision_topic: "/vision"
+      vision_feature_topic: "/vision_feature"
+
+    tf_joint:
+      base_link_frame: "base_link"
+      camera_frame: "zedm_left_camera_optical_frame"
+
+pantilt_node:
+  ros__parameters:
+    rate_hz: 50.0
+
+    topic:
+      vision_topic: "/vision"
+      pantilt_topic: "/pantilt_dxl"
+      joint_state_topic: "/joint_states"
+      ball_lost_topic: "/camera1/pan_tilt"
+      master2vision: "/master2vision"
+
+    motor:
+      pan_id: 22
+      pan_max_deg: 70.0
+      pan_min_deg: -70.0
+
+      tilt_id: 23
+      tilt_max_deg: -5.0
+      tilt_min_deg: -45.0
+
+    scan_pan_speed_deg_s: 40.0
+    scan_tilt_speed_deg_s: 40.0
+
+    img_w: 640
+    img_h: 360
+
+    img_cut: 6
+
+    pan_dir: -1.0
+    tilt_dir: 1.0
+
+    pan_zero_flag: true
+
+    tf_joint:
+      torso_joint_name: "torso_yaw"
+      pan_joint_name: "pan"
+      tilt_joint_name: "tilt"

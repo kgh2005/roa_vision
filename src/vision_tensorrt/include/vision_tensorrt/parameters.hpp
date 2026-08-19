@@ -17,6 +17,7 @@ public:
 
   std::string engine_path;
   std::string rgb_input_topic;
+  std::string detection_output_topic;
 
   std::vector<std::string> class_names;
   std::vector<double> confidence_thresholds;
