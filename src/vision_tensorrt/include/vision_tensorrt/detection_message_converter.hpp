@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <vision_interfaces/msg/BoundingBox.hpp>
+#include <vision_interfaces/msg/bounding_box.hpp>
 
 #include "vision_tensorrt/type.hpp"
 

@@ -3,7 +3,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <sensor_msgs/msg/image.hpp>
-#include <vision_interfaces/msg/BoundingBox.hpp>
+#include <vision_interfaces/msg/bounding_box.hpp>
 
 #include <cv_bridge/cv_bridge.hpp>
 #include <opencv2/core/mat.hpp>

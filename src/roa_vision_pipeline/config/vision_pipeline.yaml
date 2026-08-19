@@ -1,7 +1,7 @@
 detection_refiner_node:
   ros__parameters:
     hz: 30.0
-    half_win: 1  # 얼마나 주변 depth를 볼 것인가
+    half_win: 3  # 얼마나 주변 depth를 볼 것인가
     remove_space_dis: 10000  # mm
     pan_move_thresh_deg: 0.3
     use_pan_move_flag: false

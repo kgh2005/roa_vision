@@ -45,5 +45,7 @@ build:
 	  for package in $(BUILD_PACKAGES); do \
 	    echo "==> Building $${package}"; \
 	    colcon build --symlink-install --packages-select "$${package}"; \
+	    set +u; \
 	    source install/setup.bash; \
+	    set -u; \
 	  done

@@ -57,6 +57,14 @@ ros2 launch roa_vision_pipeline zedm_vision_pipeline.launch.py
 
 This starts the ZED Mini, TensorRT detector, robot/camera TF, detection refiner, and ball tracker.
 
+Debug the TF GUI without starting the ball tracker:
+
+```bash
+ros2 launch roa_vision_pipeline tf_gui_debug.launch.py
+```
+
+This starts the ZED Mini, TensorRT detector, robot/camera TF GUI, and detection refiner. It does not start the ball tracker.
+
 Start only the ZED camera and TensorRT detector:
 
 ```bash
